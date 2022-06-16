@@ -5,4 +5,5 @@
   (lib (name "adafruit")(type "Legacy")(uri "C:/Users/cruzs/Documents/KiCad/Adafruit-Eagle-Library.kicad-master/adafruit.lib")(options "")(descr ""))
   (lib (name "SJ-3524-SMT")(type "Legacy")(uri "${KIPRJMOD}/lib/SJ-3524-SMT/SJ-3524-SMT.lib")(options "")(descr ""))
   (lib (name "CMA-4544PF-W")(type "Legacy")(uri "${KIPRJMOD}/lib/CMA-4544PF-W/CMA-4544PF-W.lib")(options "")(descr ""))
+  (lib (name "displays")(type "KiCad")(uri "${KIPRJMOD}/lib/displays/displays.kicad_sym")(options "")(descr ""))
 )

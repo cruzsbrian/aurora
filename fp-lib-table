@@ -4,4 +4,6 @@
   (lib (name "SSD1306")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCad-SSD1306-128x64-master/library/SSD1306.pretty")(options "")(descr ""))
   (lib (name "CMA-4544PF-W")(type "KiCad")(uri "${KIPRJMOD}/lib/CMA-4544PF-W")(options "")(descr ""))
   (lib (name "SJ-3524-SMT")(type "KiCad")(uri "${KIPRJMOD}/lib/SJ-3524-SMT")(options "")(descr ""))
+  (lib (name "terminal_block")(type "KiCad")(uri "${KIPRJMOD}/lib/terminal_block")(options "")(descr ""))
+  (lib (name "displays")(type "KiCad")(uri "${KIPRJMOD}/lib/displays/displays.pretty")(options "")(descr ""))
 )
