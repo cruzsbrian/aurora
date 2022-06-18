@@ -1557,19 +1557,19 @@
       (rotate (xyz -90 0 0))
     )
     (model "${KIPRJMOD}/lib/teensy_library/Teensy3.2.STEP"
-      (offset (xyz 0 0 10))
+      (offset (xyz 0 0 7.62))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 180))
     )
-    (model "${KICAD6_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x14_P2.54mm_Vertical.wrl"
-      (offset (xyz 16.5 7.5 0))
+    (model "${KIPRJMOD}/lib/teensy_library/SLW-114-01-G-S.stp"
+      (offset (xyz 0 7.62 0))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 90))
+      (rotate (xyz -90 0 0))
     )
-    (model "${KICAD6_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x14_P2.54mm_Vertical.wrl"
-      (offset (xyz 16.5 -7.5 0))
+    (model "${KIPRJMOD}/lib/teensy_library/SLW-114-01-G-S.stp"
+      (offset (xyz 0 -7.62 0))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 90))
+      (rotate (xyz -90 0 0))
     )
   )
 
