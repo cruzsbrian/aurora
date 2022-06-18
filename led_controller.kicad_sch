@@ -3395,8 +3395,8 @@
   (symbol (lib_id "Device:C_Small") (at 50.8 158.75 270) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 5a9cf46d-6415-426d-ad2b-321300b09d80)
-    (property "Reference" "C4" (id 0) (at 50.7936 151.765 90))
-    (property "Value" "470n" (id 1) (at 50.7936 154.305 90))
+    (property "Reference" "C4" (id 0) (at 50.7936 152.4 90))
+    (property "Value" "0.47u" (id 1) (at 50.7936 154.94 90))
     (property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder" (id 2) (at 50.8 158.75 0)
       (effects (font (size 1.27 1.27)) hide)
     )
@@ -4723,7 +4723,7 @@
       (reference "C3") (unit 1) (value "0.1u") (footprint "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
     )
     (path "/5a9cf46d-6415-426d-ad2b-321300b09d80"
-      (reference "C4") (unit 1) (value "470n") (footprint "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
+      (reference "C4") (unit 1) (value "0.47u") (footprint "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
     )
     (path "/8c2fe5b2-2268-4e75-9ea0-430785245297"
       (reference "C5") (unit 1) (value "0.47u") (footprint "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
