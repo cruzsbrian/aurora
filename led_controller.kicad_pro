@@ -386,9 +386,7 @@
         "microvia_diameter": 0.3,
         "microvia_drill": 0.1,
         "name": "3.3V",
-        "nets": [
-          "+3V3"
-        ],
+        "nets": [],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.5,
@@ -406,9 +404,7 @@
         "microvia_diameter": 0.3,
         "microvia_drill": 0.1,
         "name": "5V",
-        "nets": [
-          "+5V"
-        ],
+        "nets": [],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 1.0,
