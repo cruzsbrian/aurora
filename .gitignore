@@ -28,6 +28,7 @@ _autosave-*
 
 .local
 fp-info-cache
+*.kicad_prl
 
 
 led_controller-backups/
