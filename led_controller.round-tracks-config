@@ -1,4 +1,4 @@
-Default	True	2.0	3
-3.3V	True	2.0	3
-5V	True	2.0	3
-True	True	False
+Default	True	5.0	3
+3.3V	True	5.0	3
+5V	True	5.0	3
+True	True
