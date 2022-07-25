@@ -1,0 +1,5 @@
+.vscode/
+.vsteensy/build/
+cores/
+lib/
+makefile
