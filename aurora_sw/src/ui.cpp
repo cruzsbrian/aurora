@@ -4,6 +4,9 @@
 #include <lvgl.h>
 
 
+using namespace std;
+
+
 TFT_eSPI tft(SCREEN_WIDTH, SCREEN_HEIGHT);
 Encoder enc(PIN_ENCODER_A, PIN_ENCODER_B);
 
@@ -11,6 +14,9 @@ static lv_group_t *g;
 static lv_indev_drv_t indev_drv;
 
 lv_obj_t *root_page;
+lv_obj_t *pattern_page;
+
+int brightness = MAX_BRIGHTNESS / 2;
 
 static void encoder_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 static void disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p);
@@ -25,6 +31,8 @@ void UserInterface::init() {
     lv_init();
     tft.begin();
     tft.setRotation(2);
+
+    analogWrite(TFT_BL, 255 * brightness * brightness / (MAX_BRIGHTNESS * MAX_BRIGHTNESS));
 
     lv_disp_draw_buf_init(&draw_buf, buf, NULL, SCREEN_WIDTH * 10);
 
@@ -59,41 +67,77 @@ void UserInterface::init() {
     lv_obj_set_size(menu, SCREEN_WIDTH, SCREEN_HEIGHT);
     lv_obj_center(menu);
 
-    // Create root page and sections
+    // Create empty pages
     root_page = create_page(NULL);
-    pattern_section = create_section(root_page, "PATTERNS");
+    pattern_page = create_page(NULL);
 
-    // Add dummy entries for testing
-    add_menu_item(pattern_section, "Fire", NULL, true);
-    add_menu_item(pattern_section, "Drift", NULL, true);
-    add_menu_item(pattern_section, "Trains", NULL, true);
-    add_menu_item(pattern_section, "Stars", NULL, true);
-    add_menu_item(pattern_section, "Bubbles", NULL, true);
+    // populate_root_page(pattern_names);
 
-    settings_section = create_section(root_page, "SETTINGS");
-    add_menu_item(settings_section, LV_SYMBOL_SD_CARD "  Eject SD Card", NULL, true);
+    lv_menu_set_page(menu, root_page);
+    Serial.println("setup done");
+}
 
+
+void UserInterface::populate_root_page(vector<string> pattern_names) {
+    lv_obj_clean(root_page);
+    
+    // Set layout/style to start from top right.
+    lv_obj_set_flex_align(root_page, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+    lv_obj_set_style_pad_row(root_page, 0, 0);
+
+    // Create pattern section
+    lv_obj_t *pattern_section = create_section(root_page, "PATTERNS");
+
+    // Add patterns to menu
+    for (auto pattern_name : pattern_names) {
+        add_menu_item(pattern_section, pattern_name.c_str(), NULL, true);
+    }
+
+    // Create settings section
+    lv_obj_t *settings_section = create_section(root_page, "SETTINGS");
+
+    // Brightness slider
     lv_obj_t *cont = add_menu_item(settings_section, LV_SYMBOL_EYE_OPEN "  ", NULL, false);
+    lv_obj_set_style_pad_right(cont, 20, 0);
     lv_obj_t *slider = lv_slider_create(cont);
-    lv_slider_set_range(slider, 0, 20);
-    lv_slider_set_value(slider, 20, LV_ANIM_OFF);
+    lv_slider_set_range(slider, 0, MAX_BRIGHTNESS);
+    lv_slider_set_value(slider, brightness, LV_ANIM_OFF);
     lv_obj_add_event_cb(slider, set_brightness_cb, LV_EVENT_VALUE_CHANGED, NULL);
     lv_obj_add_event_cb(slider, scroll_on_focus_cb, LV_EVENT_FOCUSED, NULL);
     lv_obj_set_flex_grow(slider, 1);
 
-    lv_menu_set_page(menu, root_page);
+    // Setting focus to the slider (the last element) and then next element resets focus to the first element.
+    // This has to be done to get focus back on an existing item if the page has been re-populated.
+    lv_group_focus_obj(slider);
+    lv_group_focus_next(g);
+}
 
-    Serial.println("setup done");
+
+void UserInterface::card_removed() {
+    lv_obj_clean(root_page);
+
+    // Set page style/layout to center the items and pad between them.
+    lv_obj_set_flex_align(root_page, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_style_pad_row(root_page, 20, 0);
+
+    // Add big SD card icon.
+    lv_obj_t *card_label = lv_label_create(root_page);
+    lv_label_set_text(card_label, LV_SYMBOL_SD_CARD);
+    lv_obj_set_style_text_font(card_label, &lv_font_montserrat_32, 0);
+
+    // Add label.
+    lv_obj_t *insert_card_label = lv_label_create(root_page);
+    lv_label_set_text(insert_card_label, "Insert SD Card");
+
+    // Set page to root in case it's currently on a pattern page.
+    // Setting page to NULL first resets the menu history, so the back button won't be displayed.
+    lv_menu_set_page(menu, NULL);
+    lv_menu_set_page(menu, root_page);
 }
 
 
 void UserInterface::update() {
     lv_timer_handler();
-}
-
-
-void UserInterface::add_pattern(const char *name, int pattern_idx) {
-    lv_obj_t *cont = add_menu_item(pattern_section, name, NULL, true);
 }
 
 
@@ -173,6 +217,6 @@ void scroll_on_focus_cb(lv_event_t *e) {
 
 void set_brightness_cb(lv_event_t *e) {
     lv_obj_t *obj = lv_event_get_target(e);
-    int value = lv_slider_get_value(obj);
-    analogWrite(TFT_BL, 255 * value * value / (20 * 20));
+    brightness = lv_slider_get_value(obj);
+    analogWrite(TFT_BL, 255 * brightness * brightness / (MAX_BRIGHTNESS * MAX_BRIGHTNESS));
 }

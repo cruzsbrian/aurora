@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "default",
-      "guid": "56a2ca4d-784c-4355-a2d4-b60134d5808f",
+      "guid": "0e8e454c-9216-4aa1-9653-265f84fa2e7e",
       "setupType": "quick",
       "coreBase": "C:\\Program Files (x86)\\Arduino\\hardware\\teensy\\avr",
       "compilerBase": "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\arm",
@@ -15,10 +15,12 @@
       "stdLib": "newlib",
       "sharedLibraries": [],
       "projectLibraries": [
-        "lvgl-8.3.0",
-        "TFT_eSPI-2.4.61",
+        "lvgl-8.3.0.zip",
+        "TFT_eSPI-2.4.61.zip",
+        "Encoder",
         "SPI",
-        "Encoder"
+        "SD",
+        "SdFat"
       ],
       "board": {
         "name": "Teensy 4.0",
