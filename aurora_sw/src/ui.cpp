@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include <lvgl.h>
+#include <Metro.h>
 
 
 using namespace std;
@@ -18,11 +19,16 @@ lv_obj_t *pattern_page;
 
 int brightness = MAX_BRIGHTNESS / 2;
 
+vector<Pattern> patterns;
+int current_pattern_idx = 0;
+Metro pattern_metro = Metro(500);
+
 static void encoder_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 static void disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p);
 
 void scroll_on_focus_cb(lv_event_t *e);
 void set_brightness_cb(lv_event_t *e);
+void pattern_change_cb(lv_event_t *e);
 
 
 void UserInterface::init() {
@@ -67,18 +73,17 @@ void UserInterface::init() {
     lv_obj_set_size(menu, SCREEN_WIDTH, SCREEN_HEIGHT);
     lv_obj_center(menu);
 
-    // Create empty pages
+    // Create root page
     root_page = create_page(NULL);
-    pattern_page = create_page(NULL);
-
-    // populate_root_page(pattern_names);
 
     lv_menu_set_page(menu, root_page);
-    Serial.println("setup done");
+    Serial.println(F("UI initialized"));
 }
 
 
-void UserInterface::populate_root_page(vector<string> pattern_names) {
+void UserInterface::populate_root_page(vector<Pattern> p) {
+    patterns = p;
+
     lv_obj_clean(root_page);
     
     // Set layout/style to start from top right.
@@ -89,8 +94,10 @@ void UserInterface::populate_root_page(vector<string> pattern_names) {
     lv_obj_t *pattern_section = create_section(root_page, "PATTERNS");
 
     // Add patterns to menu
-    for (auto pattern_name : pattern_names) {
-        add_menu_item(pattern_section, pattern_name.c_str(), NULL, true);
+    for (int i = 0; i < patterns.size(); i++) {
+        lv_obj_t *subpage = create_page(patterns[i].name.c_str());
+        lv_obj_t *cont = add_menu_item(pattern_section, patterns[i].name.c_str(), subpage, true);
+        lv_obj_add_event_cb(cont, pattern_change_cb, LV_EVENT_CLICKED, (void *) i);
     }
 
     // Create settings section
@@ -138,11 +145,13 @@ void UserInterface::card_removed() {
 
 void UserInterface::update() {
     lv_timer_handler();
+
+    if (pattern_metro.check() == 1) patterns[current_pattern_idx].update();
 }
 
 
-lv_obj_t *UserInterface::create_page(char *name) {
-    lv_obj_t *page = lv_menu_page_create(menu, name);
+lv_obj_t *UserInterface::create_page(const char *name) {
+    lv_obj_t *page = lv_menu_page_create(menu, (char *) name);
     lv_obj_set_style_pad_hor(page, 5, 0);
     lv_obj_set_style_pad_bottom(page, 5, 0);
     return page;
@@ -219,4 +228,22 @@ void set_brightness_cb(lv_event_t *e) {
     lv_obj_t *obj = lv_event_get_target(e);
     brightness = lv_slider_get_value(obj);
     analogWrite(TFT_BL, 255 * brightness * brightness / (MAX_BRIGHTNESS * MAX_BRIGHTNESS));
+}
+
+
+void pattern_change_cb(lv_event_t *e) {
+    int new_pattern_idx = (int) lv_event_get_user_data(e);
+
+    Serial.print("Changing pattern to ");
+    Serial.println(patterns[new_pattern_idx].name.c_str());
+
+    if (patterns[current_pattern_idx].loaded) {
+        Serial.println("Unloading current pattern.");
+        patterns[current_pattern_idx].unload();
+    }
+
+    Serial.println("Loading new pattern.");
+    patterns[new_pattern_idx].load();
+
+    current_pattern_idx = new_pattern_idx;  
 }

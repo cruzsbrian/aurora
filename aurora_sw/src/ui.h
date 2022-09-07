@@ -7,6 +7,8 @@
 #include <TFT_eSPI.h>
 #include <Encoder.h>
 
+#include "pattern.h"
+
 
 using namespace std;
 
@@ -26,11 +28,11 @@ using namespace std;
 class UserInterface {
 public:
     void init();
-    void populate_root_page(vector<string> pattern_names);
+    void populate_root_page(vector<Pattern> p);
     void card_removed();
     void update();
 private:
-    lv_obj_t *create_page(char *name);
+    lv_obj_t *create_page(const char *name);
     lv_obj_t *create_section(lv_obj_t *page, const char *name);
     lv_obj_t *add_menu_item(lv_obj_t *section, const char *name, lv_obj_t *sub_page, bool scrollable);
 

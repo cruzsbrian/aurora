@@ -13,21 +13,24 @@
       "makefileExtension": null,
       "coreStrategy": "copy",
       "stdLib": "newlib",
-      "sharedLibraries": [],
+      "sharedLibraries": [
+        "LuaArduino"
+      ],
       "projectLibraries": [
-        "lvgl-8.3.0.zip",
-        "TFT_eSPI-2.4.61.zip",
         "Encoder",
-        "SPI",
+        "lvgl-8.3.0",
         "SD",
-        "SdFat"
+        "SdFat",
+        "SPI",
+        "TFT_eSPI-2.4.61",
+        "Metro"
       ],
       "board": {
         "name": "Teensy 4.0",
         "options": {
           "USB Type": "Serial",
           "CPU Speed": "600 MHz",
-          "Optimize": "Faster",
+          "Optimize": "Smallest Code",
           "Keyboard Layout": "US English"
         }
       }
