@@ -8,30 +8,41 @@
 using namespace std;
 
 
+namespace ui {
+
+
 TFT_eSPI tft(SCREEN_WIDTH, SCREEN_HEIGHT);
 Encoder enc(PIN_ENCODER_A, PIN_ENCODER_B);
 
 static lv_group_t *g;
 static lv_indev_drv_t indev_drv;
 
+lv_disp_draw_buf_t draw_buf;
+lv_color_t buf[SCREEN_WIDTH * 10];
+
+lv_style_t style_header;
+lv_obj_t *menu;
+
 lv_obj_t *root_page;
 lv_obj_t *pattern_page;
 
 int brightness = MAX_BRIGHTNESS / 2;
 
-vector<Pattern> patterns;
-int current_pattern_idx = 0;
-Metro pattern_metro = Metro(500);
+unsigned int selected_pattern = 0;
 
 static void encoder_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 static void disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p);
+
+lv_obj_t *create_page(const char *name);
+lv_obj_t *create_section(lv_obj_t *page, const char *name);
+lv_obj_t *add_menu_item(lv_obj_t *section, const char *name, lv_obj_t *sub_page, bool scrollable);
 
 void scroll_on_focus_cb(lv_event_t *e);
 void set_brightness_cb(lv_event_t *e);
 void pattern_change_cb(lv_event_t *e);
 
 
-void UserInterface::init() {
+void init() {
     pinMode(PIN_BUTTON, INPUT_PULLUP);
 
     lv_init();
@@ -81,9 +92,7 @@ void UserInterface::init() {
 }
 
 
-void UserInterface::populate_root_page(vector<Pattern> p) {
-    patterns = p;
-
+void populate_root_page(const vector<Pattern> &patterns) {
     lv_obj_clean(root_page);
     
     // Set layout/style to start from top right.
@@ -95,8 +104,9 @@ void UserInterface::populate_root_page(vector<Pattern> p) {
 
     // Add patterns to menu
     for (int i = 0; i < patterns.size(); i++) {
-        lv_obj_t *subpage = create_page(patterns[i].name.c_str());
-        lv_obj_t *cont = add_menu_item(pattern_section, patterns[i].name.c_str(), subpage, true);
+        // lv_obj_t *subpage = create_page(patterns[i].name.c_str());
+        // lv_obj_t *cont = add_menu_item(pattern_section, patterns[i].name.c_str(), subpage, true);
+        lv_obj_t *cont = add_menu_item(pattern_section, patterns[i].name.c_str(), NULL, true);
         lv_obj_add_event_cb(cont, pattern_change_cb, LV_EVENT_CLICKED, (void *) i);
     }
 
@@ -120,7 +130,7 @@ void UserInterface::populate_root_page(vector<Pattern> p) {
 }
 
 
-void UserInterface::card_removed() {
+void card_removed() {
     lv_obj_clean(root_page);
 
     // Set page style/layout to center the items and pad between them.
@@ -143,14 +153,14 @@ void UserInterface::card_removed() {
 }
 
 
-void UserInterface::update() {
+void update() {
     lv_timer_handler();
 
-    if (pattern_metro.check() == 1) patterns[current_pattern_idx].update();
+    // if (pattern_metro.check() == 1) patterns[current_pattern_idx].update();
 }
 
 
-lv_obj_t *UserInterface::create_page(const char *name) {
+lv_obj_t *create_page(const char *name) {
     lv_obj_t *page = lv_menu_page_create(menu, (char *) name);
     lv_obj_set_style_pad_hor(page, 5, 0);
     lv_obj_set_style_pad_bottom(page, 5, 0);
@@ -158,7 +168,7 @@ lv_obj_t *UserInterface::create_page(const char *name) {
 }
 
 
-lv_obj_t *UserInterface::create_section(lv_obj_t *page, const char *name) {
+lv_obj_t *create_section(lv_obj_t *page, const char *name) {
     lv_obj_t *cont = lv_menu_cont_create(page);
 
     // Make header label for the section
@@ -170,7 +180,7 @@ lv_obj_t *UserInterface::create_section(lv_obj_t *page, const char *name) {
 }
 
 
-lv_obj_t *UserInterface::add_menu_item(lv_obj_t *section, const char *name, lv_obj_t *sub_page, bool scrollable) {
+lv_obj_t *add_menu_item(lv_obj_t *section, const char *name, lv_obj_t *sub_page, bool scrollable) {
     lv_obj_t *cont = lv_menu_cont_create(section);
     lv_obj_clear_flag(cont, LV_OBJ_FLAG_SCROLLABLE);    // clearing this prevents the container from being "exited" on long press
 
@@ -232,18 +242,23 @@ void set_brightness_cb(lv_event_t *e) {
 
 
 void pattern_change_cb(lv_event_t *e) {
-    int new_pattern_idx = (int) lv_event_get_user_data(e);
+    // int new_pattern_idx = (int) lv_event_get_user_data(e);
 
-    Serial.print("Changing pattern to ");
-    Serial.println(patterns[new_pattern_idx].name.c_str());
+    // Serial.print("Changing pattern to ");
+    // Serial.println(patterns[new_pattern_idx].name.c_str());
 
-    if (patterns[current_pattern_idx].loaded) {
-        Serial.println("Unloading current pattern.");
-        patterns[current_pattern_idx].unload();
-    }
+    // if (patterns[current_pattern_idx].loaded) {
+    //     Serial.println("Unloading current pattern.");
+    //     patterns[current_pattern_idx].unload();
+    // }
 
-    Serial.println("Loading new pattern.");
-    patterns[new_pattern_idx].load();
+    // Serial.println("Loading new pattern.");
+    // patterns[new_pattern_idx].load();
 
-    current_pattern_idx = new_pattern_idx;  
+    // current_pattern_idx = new_pattern_idx;  
+
+    selected_pattern = (int) lv_event_get_user_data(e);
+}
+
+
 }

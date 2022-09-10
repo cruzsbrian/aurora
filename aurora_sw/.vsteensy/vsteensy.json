@@ -19,11 +19,12 @@
       "projectLibraries": [
         "Encoder",
         "lvgl-8.3.0",
+        "Metro",
         "SD",
         "SdFat",
         "SPI",
         "TFT_eSPI-2.4.61",
-        "Metro"
+        "OctoWS2811"
       ],
       "board": {
         "name": "Teensy 4.0",

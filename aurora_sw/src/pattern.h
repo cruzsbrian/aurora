@@ -12,6 +12,7 @@ class Pattern {
 public:
     Pattern(string name, string filename): name(name), filename(filename) {
         loaded = false;
+        L = NULL;
     }
 
     void update();
