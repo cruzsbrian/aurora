@@ -5,7 +5,7 @@
 
 namespace lights {
 
-const byte pin_list[N_STRIPS] = {0};
+const byte pin_list[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
 const int BYTES_PER_LED = 3;
 DMAMEM byte displayMemory[N_STRIPS * LEDS_PER_STRIP * BYTES_PER_LED];
