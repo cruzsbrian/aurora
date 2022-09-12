@@ -20,10 +20,13 @@ bool card_inserted = false;
 vector<Pattern> patterns;
 unsigned int current_pattern_idx = 0;
 Metro pattern_metro = Metro(20);
+IntervalTimer pattern_timer;
 
 const long fps_update_millis = 1000;
 long last_fps_update_time = 0;
 long frames = 0;
+
+void update_pattern();
 
 
 vector<Pattern> get_patterns_from_sd(File dir) {
@@ -86,6 +89,9 @@ void setup() {
         Serial.println(F("failed!"));
         ui::card_removed();
     }
+
+    // Start the pattern timer.
+    pattern_timer.begin(update_pattern, 20000);
 }
 
 
@@ -116,20 +122,12 @@ void loop() {
         load_pattern(ui::selected_pattern);
     }
 
-    if (pattern_metro.check() == 1 && current_pattern_idx < patterns.size()) {
+    delay(5);
+}
+
+void update_pattern() {
+    if (current_pattern_idx < patterns.size()) {
         patterns[current_pattern_idx].update();
         lights::show();
-
-        // Update FPS counter.
-        frames++;
-        long current_time = millis();
-        if (current_time - last_fps_update_time > fps_update_millis) {
-            // Serial.print(F("FPS: "));
-            // Serial.println((double) frames / ((current_time - last_fps_update_time) / 1000.0));
-            frames = 0;
-            last_fps_update_time = current_time;
-        }
     }
-
-    delay(5);
 }
