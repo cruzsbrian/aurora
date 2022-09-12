@@ -29,6 +29,7 @@ namespace ui {
 
 void init();
 void populate_root_page(const vector<Pattern> &patterns);
+void add_param(int idx, const string &name, const Param &p);
 void card_removed();
 void update();
 

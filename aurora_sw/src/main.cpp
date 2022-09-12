@@ -38,7 +38,7 @@ vector<Pattern> get_patterns_from_sd(File dir) {
             // If it has a lua extension, add it to the list.
             if (filename.substr(filename.length() - 4) == ".lua") {
                 string name = filename.substr(0, filename.length() - 4);
-                patterns.push_back(Pattern(name, filename));
+                patterns.push_back(Pattern(patterns.size(), name, filename));
             }
         }
         entry.close();

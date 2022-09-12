@@ -6,7 +6,7 @@
 #include <SD.h>
 
 #include "lights.h"
-
+#include "ui.h"
 
 
 void hsv2rgb(float h, float s, float v, byte *r, byte *g, byte *b) {
@@ -52,7 +52,7 @@ static int l_hsv2rgb(lua_State *L) {
 }
 
 static int l_print(lua_State *L) {
-    Serial.print("LUA: ");
+    Serial.print("LUA: \t");
 
     int nargs = lua_gettop(L);
 
@@ -66,8 +66,38 @@ static int l_print(lua_State *L) {
         } else {
             Serial.print("?");
         }
+
+        if (i < nargs) {
+            Serial.print("\t");
+        }
     }
     Serial.println();
+
+    return 0;
+}
+
+static int l_add_param(lua_State *L) {
+    size_t name_len;
+    const char *name = lua_tolstring(L, 1, &name_len);
+    int min = lua_tointeger(L, 2);
+    int max = lua_tointeger(L, 3);
+    int step = lua_tointeger(L, 4);
+    int val = lua_tointeger(L, 5);
+
+    Serial.print("Adding param: "); Serial.println(name);
+    Serial.print("min: "); Serial.println(min);
+    Serial.print("max: "); Serial.println(max);
+    Serial.print("step: "); Serial.println(step);
+    Serial.print("val: "); Serial.println(val);
+
+    Pattern *pat = (Pattern *) lua_touserdata(L, lua_upvalueindex(1));
+
+    if (pat == NULL) {
+        Serial.println("Error: pat from add_param is null");
+        return 0;
+    }
+
+    pat->add_param(name, min, max, step, val);
 
     return 0;
 }
@@ -120,7 +150,7 @@ void Pattern::update() {
     lua_pop(L, 1);
 
     // Print stack size for debugging.
-    // Serial.println(lua_gettop(L));
+    // Serial.print("stack size: "); Serial.println(lua_gettop(L));
 }
 
 
@@ -139,6 +169,30 @@ void Pattern::unload() {
         L = NULL;
         loaded = false;
     }
+}
+
+
+void Pattern::add_param(const char *name, int min, int max, int step, int val) {
+    if (params.find(name) != params.end()) {
+        Serial.println("param already exists, ignoring");
+        set_variable(name, params[name].val);
+        return;
+    }
+
+    params[name] = Param{this, name, min, max, step, val};
+    ui::add_param(idx, name, params[name]);
+
+    // Set initial value in lua.
+    set_variable(name, val);
+}
+
+
+void Pattern::set_variable(const string &name, int val) {
+    if (L == NULL) return;
+
+    Serial.print("Setting "); Serial.print(name.c_str()); Serial.print(" to "); Serial.println(val);
+    lua_pushnumber(L, val);
+    lua_setglobal(L, name.c_str());
 }
 
 
@@ -183,7 +237,12 @@ void Pattern::lua_setup() {
 
     // Register the print function.
     lua_pushcfunction(L, l_print);
-    lua_setglobal(L, "myprint");
+    lua_setglobal(L, "print");
+
+    // Register the add_param function.
+    lua_pushlightuserdata(L, this);
+    lua_pushcclosure(L, l_add_param, 1);
+    lua_setglobal(L, "add_param");
 }
 
 
