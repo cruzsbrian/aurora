@@ -80,7 +80,7 @@ void init() {
 
     // Setup style for headers
     lv_style_init(&style_header);
-    lv_style_set_text_font(&style_header, &lv_font_montserrat_18);
+    lv_style_set_text_font(&style_header, &lv_font_montserrat_20);
 
     // Create menu
     menu = lv_menu_create(lv_scr_act());
