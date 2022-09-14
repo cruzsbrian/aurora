@@ -12,7 +12,7 @@ using namespace std;
 struct Param {
     void *pat;
     string name;
-    int min, max, step, val;
+    double min, max, step, val;
 };
 
 
@@ -27,8 +27,8 @@ public:
     void update();
     void load();
     void unload();
-    void add_param(const char *name, int min, int max, int step, int val);
-    void set_variable(const string &name, int val);
+    void add_param(const char *name, double min, double max, double step, double val);
+    void set_variable(const string &name, double val);
 
     int idx;
     string name;

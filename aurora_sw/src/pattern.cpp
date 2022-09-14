@@ -37,21 +37,14 @@ static int l_print(lua_State *L) {
 static int l_add_param(lua_State *L) {
     size_t name_len;
     const char *name = lua_tolstring(L, 1, &name_len);
-    int min = lua_tointeger(L, 2);
-    int max = lua_tointeger(L, 3);
-    int step = lua_tointeger(L, 4);
-    int val = lua_tointeger(L, 5);
-
-    Serial.print("Adding param: "); Serial.println(name);
-    Serial.print("min: "); Serial.println(min);
-    Serial.print("max: "); Serial.println(max);
-    Serial.print("step: "); Serial.println(step);
-    Serial.print("val: "); Serial.println(val);
+    double min = lua_tonumber(L, 2);
+    double max = lua_tonumber(L, 3);
+    double step = lua_tonumber(L, 4);
+    double val = lua_tonumber(L, 5);
 
     Pattern *pat = (Pattern *) lua_touserdata(L, lua_upvalueindex(1));
-
     if (pat == NULL) {
-        Serial.println("Error: pat from add_param is null");
+        Serial.println("Error: pattern from add_param is null");
         return 0;
     }
 
@@ -132,9 +125,15 @@ void Pattern::unload() {
 }
 
 
-void Pattern::add_param(const char *name, int min, int max, int step, int val) {
+void Pattern::add_param(const char *name, double min, double max, double step, double val) {
+    Serial.print("Adding param: "); Serial.println(name);
+    Serial.print("min: "); Serial.println(min);
+    Serial.print("max: "); Serial.println(max);
+    Serial.print("step: "); Serial.println(step);
+    Serial.print("val: "); Serial.println(val);
+
     if (params.find(name) != params.end()) {
-        Serial.println("param already exists, ignoring");
+        Serial.println("param already exists, setting to stored value");
         set_variable(name, params[name].val);
         return;
     }
@@ -147,7 +146,7 @@ void Pattern::add_param(const char *name, int min, int max, int step, int val) {
 }
 
 
-void Pattern::set_variable(const string &name, int val) {
+void Pattern::set_variable(const string &name, double val) {
     if (L == NULL) return;
 
     Serial.print("Setting "); Serial.print(name.c_str()); Serial.print(" to "); Serial.println(val);

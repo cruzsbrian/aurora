@@ -134,8 +134,11 @@ void populate_root_page(const vector<Pattern> &patterns) {
 
 
 void add_param(int idx, const string &name, const Param &p) {
-    lv_obj_t *cont = add_menu_item(pattern_pages[idx], (name + ":  ").c_str(), NULL, false);
-    lv_obj_t *slider = create_slider(cont, p.min, p.max, p.val);
+    int max_step = round((p.max - p.min) / p.step);
+    int val = round((p.val - p.min) / p.step);
+
+    lv_obj_t *cont = add_menu_item(pattern_pages[idx], (name + ": ").c_str(), NULL, false);
+    lv_obj_t *slider = create_slider(cont, 0, max_step, val);
     lv_obj_add_event_cb(slider, param_change_cb, LV_EVENT_VALUE_CHANGED, (void *) &p);
 }
 
@@ -273,9 +276,8 @@ void pattern_change_cb(lv_event_t *e) {
 void param_change_cb(lv_event_t *e) {
     lv_obj_t *obj = lv_event_get_target(e);
     Param *p = (Param *) lv_event_get_user_data(e);
-    Serial.print("Param change: "); Serial.println(p->name.c_str());
 
-    p->val = lv_slider_get_value(obj);
+    p->val = p->min + p->step * (double) lv_slider_get_value(obj);
 
     Pattern *pat = (Pattern *) p->pat;
     pat->set_variable(p->name, p->val);
