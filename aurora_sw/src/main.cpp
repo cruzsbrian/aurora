@@ -19,14 +19,13 @@ bool card_inserted = false;
 
 vector<Pattern> patterns;
 unsigned int current_pattern_idx = 0;
-Metro pattern_metro = Metro(20);
-IntervalTimer pattern_timer;
+long last_pattern_update = 0;
+
+const long pattern_update_interval = 20; // ms
 
 const long fps_update_millis = 1000;
 long last_fps_update_time = 0;
 long frames = 0;
-
-void update_pattern();
 
 
 vector<Pattern> get_patterns_from_sd(File dir) {
@@ -86,14 +85,10 @@ void setup() {
         ui::populate_root_page(patterns);
 
         load_pattern(current_pattern_idx);
-        pattern_metro.reset();
     } else {
         Serial.println(F("failed!"));
         ui::card_removed();
     }
-
-    // Start the pattern timer.
-    pattern_timer.begin(update_pattern, 20000);
 }
 
 
@@ -106,7 +101,6 @@ void loop() {
         ui::populate_root_page(patterns);
 
         load_pattern(current_pattern_idx);
-        pattern_metro.reset();
     } else if (!SD.mediaPresent() && card_inserted) {
         card_inserted = false;
         ui::card_removed();
@@ -124,12 +118,22 @@ void loop() {
         load_pattern(ui::selected_pattern);
     }
 
-    delay(5);
-}
+    if (millis() - last_pattern_update >= pattern_update_interval && current_pattern_idx < patterns.size()) {
+        last_pattern_update = millis();
 
-void update_pattern() {
-    if (current_pattern_idx < patterns.size()) {
+        // long start = millis();
         patterns[current_pattern_idx].update();
         lights::show();
+        // Serial.print("Pattern update took: "); Serial.print(millis() - start); Serial.println("ms");
+
+        if (millis() - last_fps_update_time >= fps_update_millis) {
+            Serial.print("FPS: "); Serial.println(1000.0 * (double) frames / (double) (millis() - last_fps_update_time));
+            last_fps_update_time = millis();
+            frames = 0;
+        }
+
+        frames++;
     }
+
+    delay(1);
 }
