@@ -9,48 +9,6 @@
 #include "ui.h"
 
 
-void hsv2rgb(float h, float s, float v, byte *r, byte *g, byte *b) {
-    float i = (int) (h * 6);
-    float f = h * 6 - i;
-    float p = v * (1 - s);
-    float q = v * (1 - f * s);
-    float t = v * (1 - (1 - f) * s);
-
-    float rf, gf, bf;
-
-    switch ((int) i % 6) {
-        case 0: rf = v, gf = t, bf = p; break;
-        case 1: rf = q, gf = v, bf = p; break;
-        case 2: rf = p, gf = v, bf = t; break;
-        case 3: rf = p, gf = q, bf = v; break;
-        case 4: rf = t, gf = p, bf = v; break;
-        case 5: rf = v, gf = p, bf = q; break;
-    }
-
-    *r = (byte) (rf * 255);
-    *g = (byte) (gf * 255);
-    *b = (byte) (bf * 255);
-}
-
-static int l_hsv2rgb(lua_State *L) {
-    float h = lua_tonumber(L, 1);
-    float s = lua_tonumber(L, 2);
-    float v = lua_tonumber(L, 3);
-
-    byte r, g, b;
-    hsv2rgb(h, s, v, &r, &g, &b);
-
-    lua_newtable(L);
-    lua_pushinteger(L, r);
-    lua_rawseti(L, -2, 1);
-    lua_pushinteger(L, g);
-    lua_rawseti(L, -2, 2);
-    lua_pushinteger(L, b);
-    lua_rawseti(L, -2, 3);
-
-    return 1;
-}
-
 static int l_print(lua_State *L) {
     Serial.print("LUA: \t");
 
@@ -102,6 +60,40 @@ static int l_add_param(lua_State *L) {
     return 0;
 }
 
+static int l_setRGB(lua_State *L) {
+    int idx = lua_tointeger(L, 1);
+    double r = lua_tonumber(L, 2);
+    double g = lua_tonumber(L, 3);
+    double b = lua_tonumber(L, 4);
+
+    lights::setRGB(idx, r, g, b);
+
+    return 0;
+}
+
+static int l_setHSV(lua_State *L) {
+    int idx = lua_tointeger(L, 1);
+    double h = lua_tonumber(L, 2);
+    double s = lua_tonumber(L, 3);
+    double v = lua_tonumber(L, 4);
+
+    lights::setHSV(idx, h, s, v);
+
+    return 0;
+}
+
+static int l_getRGB(lua_State *L) {
+    int idx = lua_tointeger(L, 1);
+    double r, g, b;
+
+    lights::getRGB(idx, &r, &g, &b);
+
+    lua_pushnumber(L, r);
+    lua_pushnumber(L, g);
+    lua_pushnumber(L, b);
+
+    return 3;
+}
 
 
 void Pattern::update() {
@@ -116,38 +108,6 @@ void Pattern::update() {
         Serial.println(lua_tostring(L, -1));
         lua_pop(L, 1);
     }
-
-    // Read LED values from lua and set them in OctoWS2811.
-    lua_getglobal(L, "leds");
-
-    for (int i = 0; i < N_LEDS; i++) {
-        lua_rawgeti(L, -1, i + 1);  // Get LED at index i + 1 from table (-1 in stack).
-        // Serial.print(lua_tointeger(L, -1));
-        // Serial.print(" ");
-
-        // Get R value.
-        lua_rawgeti(L, -1, 1);
-        int r = lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        // Get G value.
-        lua_rawgeti(L, -1, 2);
-        int g = lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        // Get B value.
-        lua_rawgeti(L, -1, 3);
-        int b = lua_tointeger(L, -1);
-        lua_pop(L, 1);
-
-        lights::leds.setPixel(i, r, g, b);
-
-        lua_pop(L, 1);  // Pop LED.
-    }
-    // Serial.println();
-
-    // Pop led array.
-    lua_pop(L, 1);
 
     // Print stack size for debugging.
     // Serial.print("stack size: "); Serial.println(lua_gettop(L));
@@ -218,22 +178,17 @@ void Pattern::lua_setup() {
     L = lua_open();
     luaL_openlibs(L);
 
-    // Set up the LED array.
-    Serial.println(F("Creating the leds array."));
-    lua_newtable(L);
-    for (int i = 0; i < N_LEDS; i++) {
-        lua_newtable(L);
-        for (int i = 0; i < 3; i++) {
-            lua_pushinteger(L, 0);
-            lua_rawseti(L, -2, i + 1);
-        }
-        lua_rawseti(L, -2, i + 1);
-    }
-    lua_setglobal(L, "leds");
+    // Push total number of LEDs.
+    lua_pushnumber(L, N_LEDS);
+    lua_setglobal(L, "N_LEDS");
 
-    // Register the hsv2rgb function.
-    lua_pushcfunction(L, l_hsv2rgb);
-    lua_setglobal(L, "HSV");
+    // Register the setRGB, setHSV, and getRGB functions.
+    lua_pushcfunction(L, l_setRGB);
+    lua_setglobal(L, "setRGB");
+    lua_pushcfunction(L, l_setHSV);
+    lua_setglobal(L, "setHSV");
+    lua_pushcfunction(L, l_getRGB);
+    lua_setglobal(L, "getRGB");
 
     // Register the print function.
     lua_pushcfunction(L, l_print);

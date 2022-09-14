@@ -60,6 +60,8 @@ void load_pattern(unsigned int idx) {
     // Unload current pattern.
     patterns[current_pattern_idx].unload();
 
+    lights::blank();
+
     // Load new pattern.
     patterns[idx].load();
     current_pattern_idx = idx;

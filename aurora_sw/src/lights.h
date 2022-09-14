@@ -13,6 +13,11 @@ namespace lights {
 void init();
 void show();
 void blank();
+void setRGB(int idx, double r, double g, double b);
+void setHSV(int idx, double h, double s, double v);
+void getRGB(int idx, double *r, double *g, double *b);
+
+void hsv2rgb(double h, double s, double v, double *r, double *g, double *b);
 
 extern OctoWS2811 leds;
 
