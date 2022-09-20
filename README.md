@@ -4,7 +4,7 @@ It controls up to 8 WS2811-style LED strips in parallel.
 A microphone and audio jack can be used for music visualization.
 LED patterns are programmed in Lua and can be modified without rebooting by replacing the SD card.
 
-Interactive PCB BOM viewer: http://reversebreakdown.com/aurora/
+[Interactive PCB BOM viewer](https://htmlpreview.github.io/?https://github.com/cruzsbrian/aurora/blob/main/aurora_hw/bom/ibom.html)
 
 | <img src="/img/menu.jpg" height=100%> | <img src="/img/pattern.jpg" height=100%> |
 | ----------------------------- | ----------------------------------- |
