@@ -6,4 +6,5 @@
   (lib (name "SJ-3524-SMT")(type "KiCad")(uri "${KIPRJMOD}/lib/SJ-3524-SMT")(options "")(descr ""))
   (lib (name "terminal_block")(type "KiCad")(uri "${KIPRJMOD}/lib/terminal_block")(options "")(descr ""))
   (lib (name "displays")(type "KiCad")(uri "${KIPRJMOD}/lib/displays/displays.pretty")(options "")(descr ""))
+  (lib (name "SP3T-CL-SB-13A-01T")(type "KiCad")(uri "${KIPRJMOD}/lib/SP3T-CL-SB-13A-01T/footprints.pretty")(options "")(descr ""))
 )
