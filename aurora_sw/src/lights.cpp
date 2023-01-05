@@ -5,6 +5,9 @@
 
 namespace lights {
 
+const int n_leds[N_STRIPS] = {300, 360};
+const int led_dirs[N_STRIPS] = {1, -1};
+
 const byte pin_list[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
 const int BYTES_PER_LED = 3;
@@ -14,6 +17,25 @@ byte drawingMemory[N_STRIPS * LEDS_PER_STRIP * BYTES_PER_LED];
 const int conf = WS2811_GRB | WS2811_800kHz;
 
 OctoWS2811 leds(LEDS_PER_STRIP, displayMemory, drawingMemory, conf, N_STRIPS, pin_list);
+
+
+int transform_idx(int idx) {
+    // Calculate strip and index in strip based on n_leds
+    int strip = 0;
+    while (idx >= n_leds[strip]) {
+        idx -= n_leds[strip];
+        strip++;
+    }
+
+    // Calculate index for OctoWS2811 based on led_starts and led_dirs
+    if (led_dirs[strip] == 1) {
+        idx = strip * LEDS_PER_STRIP + idx;
+    } else {
+        idx = (strip + 1) * LEDS_PER_STRIP - idx - 1;
+    }
+
+    return idx;
+}
 
 
 void init() {
@@ -26,13 +48,13 @@ void show() {
 }
 
 void blank() {
-    for (int i = 0; i < N_LEDS; i++) {
+    for (int i = 0; i < N_STRIPS * LEDS_PER_STRIP; i++) {
         leds.setPixel(i, 0, 0, 0);
     }
 }
 
 void setRGB(int idx, double r, double g, double b) {
-    leds.setPixel(idx, r * 255, g * 255, b * 255);
+    leds.setPixel(transform_idx(idx), r * 255, g * 255, b * 255);
 }
 
 void setHSV(int idx, double h, double s, double v) {
@@ -42,7 +64,7 @@ void setHSV(int idx, double h, double s, double v) {
 }
 
 void getRGB(int idx, double *r, double *g, double *b) {
-    uint32_t rgb = leds.getPixel(idx);
+    uint32_t rgb = leds.getPixel(transform_idx(idx));
     *r = (rgb >> 16) / 255.0;
     *g = ((rgb >> 8) & 0xff) / 255.0;
     *b = (rgb & 0xff) / 255.0;

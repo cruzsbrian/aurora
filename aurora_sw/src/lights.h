@@ -3,9 +3,9 @@
 #include <OctoWS2811.h>
 
 
-#define N_STRIPS 1
-#define LEDS_PER_STRIP 60
-#define N_LEDS (N_STRIPS * LEDS_PER_STRIP)
+#define N_STRIPS 2
+#define LEDS_PER_STRIP 360
+#define N_LEDS 660
 
 
 namespace lights {

@@ -34,6 +34,11 @@ static int l_print(lua_State *L) {
     return 0;
 }
 
+static int l_serial_available(lua_State *L) {
+    lua_pushnumber(L, Serial.available());
+    return 1;
+}
+
 static int l_add_param(lua_State *L) {
     size_t name_len;
     const char *name = lua_tolstring(L, 1, &name_len);
@@ -54,7 +59,7 @@ static int l_add_param(lua_State *L) {
 }
 
 static int l_setRGB(lua_State *L) {
-    int idx = lua_tointeger(L, 1);
+    int idx = lua_tointeger(L, 1) - 1;
     double r = lua_tonumber(L, 2);
     double g = lua_tonumber(L, 3);
     double b = lua_tonumber(L, 4);
@@ -65,7 +70,7 @@ static int l_setRGB(lua_State *L) {
 }
 
 static int l_setHSV(lua_State *L) {
-    int idx = lua_tointeger(L, 1);
+    int idx = lua_tointeger(L, 1) - 1;
     double h = lua_tonumber(L, 2);
     double s = lua_tonumber(L, 3);
     double v = lua_tonumber(L, 4);
@@ -76,7 +81,7 @@ static int l_setHSV(lua_State *L) {
 }
 
 static int l_getRGB(lua_State *L) {
-    int idx = lua_tointeger(L, 1);
+    int idx = lua_tointeger(L, 1) - 1;
     double r, g, b;
 
     lights::getRGB(idx, &r, &g, &b);
