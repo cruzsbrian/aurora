@@ -60,9 +60,9 @@ void setHSV(int idx, double h, double s, double v) {
 
 void getRGB(int idx, double *r, double *g, double *b) {
     uint32_t rgb = leds.getPixel(transform_idx(idx));
-    *r = (rgb >> 16) / 255.0;
-    *g = ((rgb >> 8) & 0xff) / 255.0;
-    *b = (rgb & 0xff) / 255.0;
+    *r = (double) (rgb >> 16) / (double) LED_BRIGHTNESS;
+    *g = (double) ((rgb >> 8) & 0xff) / (double) LED_BRIGHTNESS;
+    *b = (double) (rgb & 0xff) / (double) LED_BRIGHTNESS;
 }
 
 
