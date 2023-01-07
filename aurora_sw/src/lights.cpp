@@ -5,11 +5,6 @@
 
 namespace lights {
 
-const int n_leds[N_STRIPS] = {300, 360};
-const int led_dirs[N_STRIPS] = {1, -1};
-
-const byte pin_list[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-
 const int BYTES_PER_LED = 3;
 DMAMEM byte displayMemory[N_STRIPS * LEDS_PER_STRIP * BYTES_PER_LED];
 byte drawingMemory[N_STRIPS * LEDS_PER_STRIP * BYTES_PER_LED];
@@ -31,7 +26,7 @@ int transform_idx(int idx) {
     if (led_dirs[strip] == 1) {
         idx = strip * LEDS_PER_STRIP + idx;
     } else {
-        idx = (strip + 1) * LEDS_PER_STRIP - idx - 1;
+        idx = strip * LEDS_PER_STRIP + n_leds[strip] - idx - 1;
     }
 
     return idx;
@@ -54,7 +49,7 @@ void blank() {
 }
 
 void setRGB(int idx, double r, double g, double b) {
-    leds.setPixel(transform_idx(idx), r * 255, g * 255, b * 255);
+    leds.setPixel(transform_idx(idx), r * LED_BRIGHTNESS, g * LED_BRIGHTNESS, b * LED_BRIGHTNESS);
 }
 
 void setHSV(int idx, double h, double s, double v) {
