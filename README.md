@@ -9,6 +9,17 @@ LED patterns are programmed in Lua and can be modified without rebooting by repl
 | <img src="/img/menu.jpg" height=100%> | <img src="/img/pattern.jpg" height=100%> |
 | ----------------------------- | ----------------------------------- |
 
+## Configuring LED Strips
+
+`aurora_sw/src/lights.h` contains configuration for the number of strips and their lengths and directions.
+
+`N_STRIPS` is the total number of strips (starting from the top connector).  
+`LEDS_PER_STRIP` the maximum number of LEDs on a single strip.  
+`N_LEDS` is the total number of LEDs (the sum of all the strip lengths, less than or equal to `N_STRIPS * LEDS_PER_STRIP`).  
+`n_leds[N_STRIPS]` is an array of the strip lengths.  
+`led_dirs[N_STRIPS]` is an array of the strip directions.
+1 indicates the strip should start from its first LED, -1 indicates it should start from its last LED.
+
 ## Writing Patterns
 
 When an SD card is inserted, Aurora interprets each Lua file in its root directory as a pattern.
