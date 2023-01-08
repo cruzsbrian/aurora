@@ -3,7 +3,7 @@
 
 
 add_param("brightness", 0.1, 1, 0.05, 1)
-add_param("cooling", 0, 3000, 10, 1500)     -- Cooling rate
+add_param("cooling", 0, 3000, 50, 1500)     -- Cooling rate
 add_param("max_base", 10, 200, 10, 80)     -- Highest LED which can spark
 
 -- Archways (inclusive):
