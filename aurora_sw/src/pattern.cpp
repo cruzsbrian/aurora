@@ -118,7 +118,6 @@ void Pattern::load() {
 }
 
 
-
 void Pattern::unload() {
     if (L) {
         Serial.print(F("Unloading pattern "));
@@ -127,6 +126,18 @@ void Pattern::unload() {
         L = NULL;
         loaded = false;
     }
+}
+
+
+void Pattern::upload_code(string code) {
+    unload();
+    lua_setup();
+    load_code(code);
+}
+
+
+void Pattern::save_code(string code) {
+    write_to_sd(filename, code);
 }
 
 
@@ -174,6 +185,17 @@ string Pattern::read_from_sd(string filename) {
     file.close();
 
     return contents;
+}
+
+
+void Pattern::write_to_sd(string filename, string data) {
+    SD.remove(filename.c_str());
+    File file = SD.open(filename.c_str(), FILE_WRITE);
+
+    file.print(data.c_str());
+    file.close();
+
+    Serial.print("Wrote "); Serial.print(data.length()); Serial.println(" bytes to SD.");
 }
 
 

@@ -27,6 +27,8 @@ public:
     void update();
     void load();
     void unload();
+    void upload_code(string code);
+    void save_code(string code);
     void add_param(const char *name, double min, double max, double step, double val);
     void set_variable(const string &name, double val);
 
@@ -37,6 +39,7 @@ public:
 private:
     void lua_setup();
     string read_from_sd(string filename);
+    void write_to_sd(string filename, string data);
     void load_code(string code);
 
     lua_State *L;

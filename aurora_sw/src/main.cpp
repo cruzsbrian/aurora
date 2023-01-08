@@ -118,6 +118,8 @@ void loop() {
         load_pattern(ui::selected_pattern);
     }
 
+    // If pattern_update_interval has passed, update the current pattern.
+    // Also update the FPS counter every fps_update_millis.
     if (millis() - last_pattern_update >= pattern_update_interval && current_pattern_idx < patterns.size()) {
         last_pattern_update = millis();
 
@@ -133,6 +135,28 @@ void loop() {
         }
 
         frames++;
+    }
+
+    // Check to see if serial data is available. If so, write it to the SD card for the current pattern and reload the pattern.
+    if (Serial.available()) {
+        // Read first line to see what the command is.
+        string command = Serial.readStringUntil('\n').c_str();
+
+        // Read the rest of the data
+        string data;
+        while (Serial.available()) {
+            data += (char) Serial.read();
+        }
+
+        Serial.println("Received on serial: ");
+        Serial.println(command.c_str());
+        Serial.println(data.c_str());
+
+        patterns[current_pattern_idx].upload_code(data.c_str());
+
+        if (command == "SAVE") {
+            patterns[current_pattern_idx].save_code(data.c_str());
+        }
     }
 
     delay(1);
