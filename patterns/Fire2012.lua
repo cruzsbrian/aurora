@@ -54,7 +54,7 @@ function update()
     for j = 1,led_idx_farther-1 do
         if heat[led_idx_farther-j] > 128 then -- hottest
             setRGB(j, brightness, brightness, brightness*heat[led_idx_farther - j]/255)
-        elseif heat[led_idx_farther - j] > 64 then -- middle
+        elseif heat[led_idx_farther-j] > 64 then -- middle
             setRGB(j, brightness, brightness*heat[led_idx_farther-j]/255, 0)
         else 
             setRGB(j, brightness*heat[led_idx_farther-j]/255, 0, 0)
@@ -78,7 +78,7 @@ function update()
     for j = math.floor((led_idx_farther + led_idx_closer)/2)+1, led_idx_closer-1 do
         if heat[led_idx_closer-j] > 128 then -- hottest
             setRGB(j, brightness, brightness, brightness*heat[led_idx_closer-j]/255)
-        elseif heat[j - led_idx_farther] > 64 then -- middle
+        elseif heat[led_idx_closer-j] > 64 then -- middle
             setRGB(j, brightness, brightness*heat[led_idx_closer-j]/255, 0)
         else 
             setRGB(j, brightness*heat[led_idx_closer-j]/255, 0, 0)
