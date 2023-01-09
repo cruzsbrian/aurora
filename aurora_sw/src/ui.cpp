@@ -38,8 +38,8 @@ static void disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *c
 
 lv_obj_t *create_page(const char *name);
 lv_obj_t *create_section(lv_obj_t *page, const char *name);
-lv_obj_t *add_menu_item(lv_obj_t *section, const char *name, lv_obj_t *sub_page, bool scrollable);
-lv_obj_t *create_slider(lv_obj_t *cont, int min, int max, int val);
+lv_obj_t *add_menu_item(lv_obj_t *page, lv_obj_t *section, const char *name, lv_obj_t *sub_page, bool scrollable);
+lv_obj_t *create_slider(lv_obj_t *page, lv_obj_t *cont, int min, int max, int val);
 
 void scroll_on_focus_cb(lv_event_t *e);
 void set_brightness_cb(lv_event_t *e);
@@ -112,7 +112,7 @@ void populate_root_page(const vector<Pattern> &patterns) {
         lv_obj_t *subpage = create_page(patterns[i].name.c_str());
         pattern_pages.push_back(subpage);
 
-        lv_obj_t *cont = add_menu_item(pattern_section, patterns[i].name.c_str(), subpage, true);
+        lv_obj_t *cont = add_menu_item(root_page, pattern_section, patterns[i].name.c_str(), subpage, true);
         // lv_obj_t *cont = add_menu_item(pattern_section, patterns[i].name.c_str(), NULL, true);
 
         lv_obj_add_event_cb(cont, pattern_change_cb, LV_EVENT_CLICKED, (void *) i);
@@ -122,8 +122,8 @@ void populate_root_page(const vector<Pattern> &patterns) {
     lv_obj_t *settings_section = create_section(root_page, "SETTINGS");
 
     // Brightness slider
-    lv_obj_t *cont = add_menu_item(settings_section, LV_SYMBOL_EYE_OPEN "  ", NULL, false);
-    lv_obj_t *slider = create_slider(cont, 0, MAX_BRIGHTNESS, brightness);
+    lv_obj_t *cont = add_menu_item(root_page, settings_section, LV_SYMBOL_EYE_OPEN "  ", NULL, false);
+    lv_obj_t *slider = create_slider(root_page, cont, 0, MAX_BRIGHTNESS, brightness);
     lv_obj_add_event_cb(slider, set_brightness_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     // Setting focus to the slider (the last element) and then next element resets focus to the first element.
@@ -137,8 +137,8 @@ void add_param(int idx, const string &name, const Param &p) {
     int max_step = round((p.max - p.min) / p.step);
     int val = round((p.val - p.min) / p.step);
 
-    lv_obj_t *cont = add_menu_item(pattern_pages[idx], (name + ": ").c_str(), NULL, false);
-    lv_obj_t *slider = create_slider(cont, 0, max_step, val);
+    lv_obj_t *cont = add_menu_item(pattern_pages[idx], pattern_pages[idx], (name + ": ").c_str(), NULL, false);
+    lv_obj_t *slider = create_slider(pattern_pages[idx], cont, 0, max_step, val);
     lv_obj_add_event_cb(slider, param_change_cb, LV_EVENT_VALUE_CHANGED, (void *) &p);
 }
 
@@ -195,13 +195,13 @@ lv_obj_t *create_section(lv_obj_t *page, const char *name) {
 }
 
 
-lv_obj_t *add_menu_item(lv_obj_t *section, const char *name, lv_obj_t *sub_page, bool scrollable) {
+lv_obj_t *add_menu_item(lv_obj_t *page, lv_obj_t *section, const char *name, lv_obj_t *sub_page, bool scrollable) {
     lv_obj_t *cont = lv_menu_cont_create(section);
     lv_obj_clear_flag(cont, LV_OBJ_FLAG_SCROLLABLE);    // clearing this prevents the container from being "exited" on long press
 
     if (scrollable) {
         lv_group_add_obj(g, cont);  // must be added to the group to receive encoder input
-        lv_obj_add_event_cb(cont, scroll_on_focus_cb, LV_EVENT_FOCUSED, NULL);  // add callback for custom scroll on focus
+        lv_obj_add_event_cb(cont, scroll_on_focus_cb, LV_EVENT_FOCUSED, (void *) page);  // add callback for custom scroll on focus
     }
 
     lv_obj_t *label = lv_label_create(cont);
@@ -213,13 +213,13 @@ lv_obj_t *add_menu_item(lv_obj_t *section, const char *name, lv_obj_t *sub_page,
 }
 
 
-lv_obj_t *create_slider(lv_obj_t *cont, int min, int max, int val) {
+lv_obj_t *create_slider(lv_obj_t *page, lv_obj_t *cont, int min, int max, int val) {
     lv_obj_set_style_pad_right(cont, 20, 0);
 
     lv_obj_t *slider = lv_slider_create(cont);
     lv_slider_set_range(slider, min, max);
     lv_slider_set_value(slider, val, LV_ANIM_OFF);
-    lv_obj_add_event_cb(slider, scroll_on_focus_cb, LV_EVENT_FOCUSED, NULL);
+    lv_obj_add_event_cb(slider, scroll_on_focus_cb, LV_EVENT_FOCUSED, page);
     lv_obj_set_flex_grow(slider, 1);
     return slider;
 }
@@ -251,13 +251,14 @@ static void disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *c
 
 void scroll_on_focus_cb(lv_event_t *e) {
     lv_obj_t *obj = lv_event_get_target(e);
+    lv_obj_t *page = (lv_obj_t *) lv_event_get_user_data(e);
 
     lv_area_t coords = obj->coords;
     int y_center = (coords.y1 + coords.y2) / 2;
     int dist_to_center = SCREEN_HEIGHT / 2 - y_center;
 
-    int current_scroll = lv_obj_get_scroll_y(root_page);
-    lv_obj_scroll_to(root_page, 0, current_scroll - dist_to_center, LV_ANIM_ON);
+    int current_scroll = lv_obj_get_scroll_y(page);
+    lv_obj_scroll_to(page, 0, current_scroll - dist_to_center, LV_ANIM_ON);
 }
 
 
