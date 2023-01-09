@@ -152,7 +152,10 @@ void loop() {
         Serial.println(command.c_str());
         Serial.println(data.c_str());
 
-        patterns[current_pattern_idx].upload_code(data.c_str());
+        if (command == "LOAD" || command == "SAVE") {
+            lights::blank();
+            patterns[current_pattern_idx].upload_code(data.c_str());
+        }
 
         if (command == "SAVE") {
             patterns[current_pattern_idx].save_code(data.c_str());
