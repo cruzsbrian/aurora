@@ -26,6 +26,7 @@
 #define TFT_CS        10
 #define TFT_RST        9 // Or set to -1 and connect to Arduino RESET pin
 #define TFT_DC         8
+#define TFT_BL		18
 
 // Configure fonts. 
 #define LOAD_GLCD   // Font 1. Original Adafruit 8 pixel font needs ~1820 bytes in FLASH
