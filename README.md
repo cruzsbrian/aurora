@@ -57,7 +57,7 @@ end
 
 # Compile / Upload:
 ## Site Customization: : 
-Although you can run the Aurora firmware as-is, you will probably want to go in and customize the LED settings to match the specific layout of your installation. This customization is done in the aurora_sw/main/lights.h file as follows. Examples are included for a few different possible configurations. 
+Although you can run the Aurora firmware as-is, you will probably want to go in and customize the LED settings to match the specific layout of your installation. This customization is done in the aurora_sw/src/lights.h file as follows. Examples are included for a few different possible configurations. 
 
 Important Parameters:
 - *LED_BRIGHTNESS:* How bright should "full" brightness be. Higher values will provide more light and color depth, but will also increase current use and may introduce color aberration on longer strips when many LEDs are lit. A default value of 100 will work in most environments. 
@@ -83,13 +83,13 @@ Using the arduino IDE Install:
  
  Navigate to your a libraries folder (likely /home/[name]/Arduino/libraries) and clone the [arduinoLua](https://github.com/blackketter/LuaArduino) repo. 
  
- Now copy the lv_conf.h file from /aurora_sw/main/ to the top level of your Arduino libraries folder. This configures the GUI generator.
+ Now copy the lv_conf.h file from /aurora_sw/src/ to the top level of your Arduino libraries folder. This configures the GUI generator.
  
- In your arduino libraries folder, replace TFT_eSPI/User_Setup.h with the User_Setup.h file provided in aurora_sw/main/. This configures the pins and dimensions of the display itself. 
+ In your arduino libraries folder, replace TFT_eSPI/User_Setup.h with the User_Setup.h file provided in aurora_sw/src/. This configures the pins and dimensions of the display itself. 
  
- Rename /aurora_sw/main/main.cpp to /aurora_sw/main/main.ino so that it will be detected by the Arduino IDE. 
+ Rename /aurora_sw/src/main.cpp to /aurora_sw/src/main.ino so that it will be detected by the Arduino IDE. 
  
- You can now open main.ino with the Arduino IDE. 
+ You can now open src.ino with the Arduino IDE. 
  
  Before uploading you will need to set the optimizer (tools -> optimize) to "Smallest Code".
  
