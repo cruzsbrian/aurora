@@ -1,5 +1,7 @@
 .vscode/
 .vsteensy/build/
+.*swp
+.*swo
 cores/
 lib/
 makefile
