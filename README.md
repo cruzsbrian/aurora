@@ -54,3 +54,48 @@ function update()
     start = start + speed
 end
 ```
+
+# Compile / Upload:
+## Site Customization: : 
+Although you can run the Aurora firmware as-is, you will probably want to go in and customize the LED settings to match the specific layout of your installation. This customization is done in the aurora_sw/main/lights.h file as follows. Examples are included for a few different possible configurations. 
+
+Important Parameters:
+- *LED_BRIGHTNESS:* How bright should "full" brightness be. Higher values will provide more light and color depth, but will also increase current use and may introduce color aberration on longer strips when many LEDs are lit. A default value of 100 will work in most environments. 
+- *N_STRIPS:* How many different led strips there are. In this context a strip is defined as a group of LEDs which all share one signal line. 
+- *LEDS_PER_STRIP:* The maximum number of LEDs on any one strip.
+- *N_LEDS:* The total number of LEDs, this should be the sum of "n_leds".
+- *n_leds:* How many LEDs there are in each strip. For custom installations it may be nessary to count, or to upload debug patterns to precisely determine this number. Incorrect values with result in lost pixels. 
+- *led_dirs:* Which direction each strip runs relative to the direction of signal. You can pick either clockwise or counter-clockwise as the logic direction, but it must remain consistent to prevent animation jumps. Clockwise is a good default. 
+## Windows Setup: 
+Writeup Comming Soon!
+
+## Linux Setup: 
+The Linux install instructions assume that you have Version 1.x.x of the Arduino IDE installed, along with teensyduino which is used to upload code to the Teensy. Instructions for installing teensyduino (and links to arduino installers) can be found here: https://www.pjrc.com/teensy/teensyduino.html. It is definitely worth checking that your install works by uploading one of the teensy example scripts before proceeding. 
+
+Setting up the build environment is pretty straightforward, but it does involve mucking around in the arduino libraries folder. If you have any questions definitely feel free to reach out. 
+
+Using the arduino IDE Install: 
+(Sketch -> Include Library -> Manage Libraries...)
+ - SD
+ - TFT_eSPI
+ - lvgl
+ - arduinoFFT (for debugging, optional)
+ 
+ Navigate to your a libraries folder (likely /home/[name]/Arduino/libraries) and clone the [arduinoLua](https://github.com/blackketter/LuaArduino) repo. 
+ 
+ Now copy the lv_conf.h file from /aurora_sw/main/ to the top level of your Arduino libraries folder. This configures the GUI generator.
+ 
+ In your arduino libraries folder, replace TFT_eSPI/User_Setup.h with the User_Setup.h file provided in aurora_sw/main/. This configures the pins and dimensions of the display itself. 
+ 
+ Rename /aurora_sw/main/main.cpp to /aurora_sw/main/main.ino so that it will be detected by the Arduino IDE. 
+ 
+ You can now open main.ino with the Arduino IDE. 
+ 
+ Before uploading you will need to set the optimizer (tools -> optimize) to "Smallest Code".
+ 
+ You are now ready to upload!
+ 
+ # Hardware Setup / Assembly: 
+ 
+ ## Tips:
+ - The MAX9814 is the board's most fiddly component, so if you are going to use the microphone, it pays to solder that first.
