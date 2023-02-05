@@ -67,7 +67,7 @@ Important Parameters:
 - *n_leds:* How many LEDs there are in each strip. For custom installations it may be nessary to count, or to upload debug patterns to precisely determine this number. Incorrect values with result in lost pixels. 
 - *led_dirs:* Which direction each strip runs relative to the direction of signal. You can pick either clockwise or counter-clockwise as the logic direction, but it must remain consistent to prevent animation jumps. Clockwise is a good default. 
 ## Windows Setup: 
-Writeup Comming Soon!
+Write-up Coming Soon!
 
 ## Linux Setup: 
 The Linux install instructions assume that you have Version 1.x.x of the Arduino IDE installed, along with teensyduino which is used to upload code to the Teensy. Instructions for installing teensyduino (and links to arduino installers) can be found here: https://www.pjrc.com/teensy/teensyduino.html. It is definitely worth checking that your install works by uploading one of the teensy example scripts before proceeding. 
@@ -99,3 +99,7 @@ Using the arduino IDE Install:
  
  ## Tips:
  - The MAX9814 is the board's most fiddly component, so if you are going to use the microphone, it pays to solder that first.
+ - The fft_debug script can be used to check if the audio components are
+   correctly installed. To use it install the script, and then play tones from
+   your phone. The tones played and the tones reported on the serial monitor 
+   should match to within 1hz or so over 200hz - 4000hz. 
